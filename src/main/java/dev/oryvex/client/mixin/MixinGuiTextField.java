@@ -69,8 +69,7 @@ public abstract class MixinGuiTextField extends Gui {
 
     @Inject(method = "drawTextBox", at = @At("HEAD"), cancellable = true)
     private void oryvex$drawRtl(CallbackInfo ci) {
-        if (!ChatTweaksMod.persianInput() || !BiDiFontRenderer.containsComplex(this.text) || !this.getVisible()
-            || !FontHooks.handles(this.fontRendererInstance, this.text)) {
+        if (!this.getVisible()) {
             return;
         }
         ci.cancel();
@@ -84,12 +83,16 @@ public abstract class MixinGuiTextField extends Gui {
         String visible = this.fontRendererInstance.trimStringToWidth(this.text.substring(offset), this.getWidth());
         int x = this.getEnableBackgroundDrawing() ? this.xPosition + 4 : this.xPosition;
         int y = this.getEnableBackgroundDrawing() ? this.yPosition + (this.height - 8) / 2 : this.yPosition;
-        this.fontRendererInstance.drawStringWithShadow(visible, x, y, color);
+        float typing = ChatTweaksMod.typingProgress(this, this.text);
+        float settle = (1.0F - typing) * 4.0F;
+        int textAlpha = Math.max(1, Math.min(255, Math.round(210.0F + 45.0F * typing)));
+        int animatedColor = (textAlpha << 24) | (color & 0x00FFFFFF);
+        this.fontRendererInstance.drawStringWithShadow(visible, x + settle, y, animatedColor);
 
         int caret = this.cursorPosition - offset;
         boolean caretVisible = this.isFocused && this.cursorCounter / 6 % 2 == 0 && caret >= 0 && caret <= visible.length();
         if (caretVisible) {
-            float caretX = x + BiDiFontRenderer.get().getCaretX(visible, caret, FontHooks.vanillaSize());
+            float caretX = x + settle + BiDiFontRenderer.get().getCaretX(visible, caret, FontHooks.vanillaSize());
             int cx = Math.round(caretX);
             drawRect(cx, y - 1, cx + 1, y + 1 + this.fontRendererInstance.FONT_HEIGHT, 0xFFD0D0D0);
         }

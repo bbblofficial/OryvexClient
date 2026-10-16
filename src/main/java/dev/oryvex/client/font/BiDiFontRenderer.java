@@ -190,7 +190,10 @@ public final class BiDiFontRenderer {
                 }
                 continue;
             }
-            width += FontRegistry.advanceEm(c, FontRegistry.familyFor(c), bold) * size;
+            int codePoint = text.codePointAt(i);
+            int count = Character.charCount(codePoint);
+            width += FontRegistry.advanceEm(codePoint, FontRegistry.familyForCodePoint(codePoint), bold) * size;
+            i += count - 1;
         }
         return width;
     }
@@ -255,11 +258,13 @@ public final class BiDiFontRenderer {
 
         for (int i = 0; i < text.length; i++) {
             char c = text.chars[i];
+            int codePoint = Character.codePointAt(text.chars, i, text.length);
+            int codePointCount = Character.charCount(codePoint);
             int style = text.style[i];
             boolean bold = (style & StyledText.BOLD) != 0;
-            int family = FontRegistry.familyFor(c);
-            float advance = FontRegistry.advanceEm(c, family, bold) * size;
-            char drawn = c;
+            int family = FontRegistry.familyForCodePoint(codePoint);
+            float advance = FontRegistry.advanceEm(codePoint, family, bold) * size;
+            int drawn = codePoint;
             int drawFamily = family;
             if ((style & StyledText.OBFUSCATED) != 0 && !Character.isWhitespace(c)) {
                 drawn = OBFUSCATION_POOL.charAt(this.random.nextInt(OBFUSCATION_POOL.length()));
@@ -304,6 +309,7 @@ public final class BiDiFontRenderer {
                 this.decorations.add(new float[]{cursor, baseline - size * 0.30F, advance, thickness, rgb});
             }
             cursor += advance;
+            i += codePointCount - 1;
         }
         if (drawing) {
             tessellator.draw();

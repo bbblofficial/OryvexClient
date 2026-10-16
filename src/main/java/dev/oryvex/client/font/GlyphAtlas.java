@@ -13,6 +13,8 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Dynamic glyph atlas for one font face at one raster size. Glyphs are rasterised in white
@@ -55,6 +57,7 @@ final class GlyphAtlas {
     private final float ascent;
     private final int cellHeight;
     private final Glyph[] glyphs = new Glyph[65536];
+    private final Map<Integer, Glyph> supplementaryGlyphs = new HashMap<>();
     private final List<Integer> pages = new ArrayList<>();
     private int page = -1;
     private int penX;
@@ -77,10 +80,28 @@ final class GlyphAtlas {
         return glyph;
     }
 
+    Glyph get(int codePoint) {
+        if (codePoint <= Character.MAX_VALUE) return get((char) codePoint);
+        Glyph glyph = this.supplementaryGlyphs.get(codePoint);
+        if (glyph == null) {
+            glyph = this.rasterise(codePoint);
+            this.supplementaryGlyphs.put(codePoint, glyph);
+        }
+        return glyph;
+    }
+
     private Glyph rasterise(char c) {
-        GlyphVector gv = this.font.createGlyphVector(FontRegistry.FRC, new char[]{c});
+        return rasterise(new String(new char[]{c}), Character.isWhitespace(c));
+    }
+
+    private Glyph rasterise(int codePoint) {
+        return rasterise(new String(Character.toChars(codePoint)), false);
+    }
+
+    private Glyph rasterise(String glyphText, boolean whitespace) {
+        GlyphVector gv = this.font.createGlyphVector(FontRegistry.FRC, glyphText);
         Rectangle2D bounds = gv.getVisualBounds();
-        if (Character.isWhitespace(c) || bounds.isEmpty()) {
+        if (whitespace || bounds.isEmpty()) {
             return EMPTY;
         }
         float advance = gv.getGlyphMetrics(0).getAdvance();
@@ -128,6 +149,7 @@ final class GlyphAtlas {
             GlTextures.delete(texture);
         }
         this.pages.clear();
+        this.supplementaryGlyphs.clear();
         this.page = -1;
     }
 }

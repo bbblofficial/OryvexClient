@@ -34,11 +34,11 @@ tweaker from the manifest and then the `@Mod`.
 
 | Area | What it does |
 |------|--------------|
-| Theme | Obsidian `#07080A`/90%, slate cards `#0E1117`/85%, 1px `#1C2433` borders, `#007BFF → #00B4FF` accent, `#00E5FF` glow. SDF rounded-rect shader for every surface. |
+| Theme | Obsidian `#07080A`/90%, slate cards `#0E1117`/85%, 1px `#1C2433` borders, flat muted blue accent, no gradients or glow. SDF rounded-rect shader for every surface. |
 | Glass | Dual-Kawase blur (down + up passes, `kawase_down.fsh` / `kawase_up.fsh`) composited into rounded frames by `blur_mask.fsh`. |
 | Animation | Delta-time `AnimationClock`; `Animation` tweens with `CubicBezier`, `EXPO_OUT`, `BACK_OUT`; `SmoothValue` for scrolling. |
 | Font engine | `BiDiFontRenderer`: Inter for Latin, Vazirmatn for Arabic script (U+0600–06FF, FB50–FDFF, FE70–FEFF) in the same string, no language toggle. `ArabicShaper` does Isolated/Initial/Medial/Final + Lam-Alef (پ چ ژ گ ک ی included, ZWNJ/ZWJ aware); `java.text.Bidi` + `TextLayout` reorder. Latin uses glyph atlases, RTL lines are cached textures. Hooked into the vanilla `FontRenderer`, so chat, HUD, buttons, tooltips and nametags all shape correctly. |
-| Menus | `OryvexMainMenu` (GLSL nebula + grid, glass nav, session widget with skin head), `OryvexIngameMenu` (blurred live world), themed `GuiButton`, sliders, list backgrounds for `GuiMultiplayer` / `GuiOptions` and every vanilla screen. |
+| Menus | `OryvexMainMenu` (flat background, solid nav, session widget with skin head), `OryvexIngameMenu` (solid live-world tint), themed `GuiButton`, sliders, list backgrounds for `GuiMultiplayer` / `GuiOptions` and every vanilla screen. |
 | Alt manager | Offline login (3–16 chars), `UUID.nameUUIDFromBytes("OfflinePlayer:" + name)`, `new Session(name, uuid, "0", "legacy")` swapped at runtime, random PvP names, favourites, `oryvex/alts.json`. |
 | Dashboard | `RSHIFT` or the pause menu. Search (EN/FA), All/HUD/PvP/Visuals/Misc tabs, profiles, card grid with pill toggles, settings drawer (sliders, modes, HSB color picker, keybinds). |
 | HUD editor | Drag & drop with centre/edge/element snapping guides, wheel scaling, right-click reset. |

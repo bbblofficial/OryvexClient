@@ -22,10 +22,8 @@ public final class NebulaBackground {
         Minecraft mc = Minecraft.getMinecraft();
         // Paint before any shader work so the first frame can never expose the default white buffer.
         RenderUtil.rect(0.0F, 0.0F, width, height, Theme.OBSIDIAN_SOLID);
-        ShaderProgram shader = Shaders.nebula();
-        if (shader == null) {
-            return;
-        }
+        // Keep menu backgrounds solid and predictable: no animated color field or glow.
+        return;
         // Keep the background fixed: menu motion is limited to fade and scale transitions.
         mouseX = 0.5F;
         mouseY = 0.5F;

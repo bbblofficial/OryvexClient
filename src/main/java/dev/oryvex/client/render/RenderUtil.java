@@ -47,7 +47,7 @@ public final class RenderUtil {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
-    /** Solid replacement for the legacy gradient API. The UI intentionally uses flat colors. */
+    /** Compatibility entry point. The client uses one solid color everywhere. */
     public static void gradient(float x, float y, float w, float h, int from, int to, boolean vertical) {
         rect(x, y, w, h, from);
     }

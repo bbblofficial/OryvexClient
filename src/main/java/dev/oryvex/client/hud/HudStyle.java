@@ -22,6 +22,6 @@ public final class HudStyle {
     }
 
     public static void accentBar(float x, float y, float h) {
-        RoundedRenderer.gradient(x, y, 2.0F, h, 1.0F, Theme.ACCENT_START, Theme.ACCENT_END, true);
+        RoundedRenderer.rect(x, y, 2.0F, h, 1.0F, Theme.ACCENT_START);
     }
 }

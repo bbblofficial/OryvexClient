@@ -52,23 +52,13 @@ public abstract class OryvexScreen extends GuiScreen {
 
     /** Blurred, tinted glass frame with the neon-slate border. */
     protected void glass(float x, float y, float w, float h, float radius, float alpha) {
-        if (InterfaceMod.blurEnabled()) {
-            KawaseBlur.glass(x, y, w, h, radius, Theme.SLATE, Theme.BORDER, alpha, InterfaceMod.blurStrength());
-        } else {
-            dev.oryvex.client.render.RoundedRenderer.bordered(x, y, w, h, radius, ColorUtil.mulAlpha(Theme.SLATE, alpha), 1.0F,
-                ColorUtil.mulAlpha(Theme.BORDER, alpha));
-        }
+        dev.oryvex.client.render.RoundedRenderer.bordered(x, y, w, h, radius, ColorUtil.mulAlpha(Theme.SLATE, alpha), 1.0F,
+            ColorUtil.mulAlpha(Theme.BORDER, alpha));
     }
 
     /** Blurs the live world behind the whole screen. */
     protected void worldBackdrop(float alpha) {
-        if (InterfaceMod.blurEnabled() && KawaseBlur.available()) {
-            int strength = InterfaceMod.blurStrength();
-            KawaseBlur.prepare(strength + 1, 1.2F + strength * 0.5F);
-            KawaseBlur.drawBlurred(0.0F, 0.0F, this.width, this.height, 0.0F, ColorUtil.mulAlpha(Theme.OBSIDIAN, 0.45F), alpha);
-        } else {
-            RenderUtil.rect(0.0F, 0.0F, this.width, this.height, ColorUtil.mulAlpha(Theme.OBSIDIAN, 0.65F * alpha));
-        }
+        RenderUtil.rect(0.0F, 0.0F, this.width, this.height, ColorUtil.mulAlpha(Theme.OBSIDIAN, 0.65F * alpha));
     }
 
     @Override

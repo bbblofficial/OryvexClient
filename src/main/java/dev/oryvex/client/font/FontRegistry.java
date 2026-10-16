@@ -119,6 +119,22 @@ public final class FontRegistry {
         return REGULAR[family].canDisplay(c);
     }
 
+    /** Selects a font for a full Unicode code point, including supplementary emoji. */
+    public static int familyForCodePoint(int codePoint) {
+        if (codePoint <= Character.MAX_VALUE) return familyFor((char) codePoint);
+        if (REGULAR[INTER].canDisplay(codePoint)) return INTER;
+        if (REGULAR[VAZIR].canDisplay(codePoint)) return VAZIR;
+        return FALLBACK;
+    }
+
+    /** Horizontal advance of a supplementary Unicode code point in em units. */
+    public static float advanceEm(int codePoint, int family, boolean bold) {
+        if (codePoint <= Character.MAX_VALUE) return advanceEm((char) codePoint, family, bold);
+        Font font = derive(family, bold, false, MEASURE_SIZE);
+        GlyphVector gv = font.createGlyphVector(FRC, new String(Character.toChars(codePoint)));
+        return gv.getGlyphMetrics(0).getAdvance() / MEASURE_SIZE;
+    }
+
     /** Horizontal advance of {@code c} in em units (multiply by the font size). */
     public static float advanceEm(char c, int family, boolean bold) {
         int index = family * 2 + (bold ? 1 : 0);

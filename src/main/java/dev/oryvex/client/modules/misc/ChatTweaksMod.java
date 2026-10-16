@@ -7,6 +7,9 @@ import dev.oryvex.client.module.ModuleManager;
 import dev.oryvex.client.setting.BooleanSetting;
 import dev.oryvex.client.setting.NumberSetting;
 
+import java.util.Map;
+import java.util.WeakHashMap;
+
 /**
  * Transparent smooth chat, unlimited history and Persian RTL input rendering.
  */
@@ -24,6 +27,13 @@ public final class ChatTweaksMod extends Module {
     private final BooleanSetting persianInput = this.add(new BooleanSetting("Persian RTL Input", true));
 
     private long lastMessageNanos;
+    private static final float TYPE_MS = 120.0F;
+    private final Map<Object, TypingState> typingStates = new WeakHashMap<>();
+
+    private static final class TypingState {
+        private String text = "";
+        private long changedNanos;
+    }
 
     public ChatTweaksMod() {
         super("ChatTweaks", "بهبود چت", "Transparent smooth chat, infinite history and Persian RTL typing.", Category.MISC, true);
@@ -67,6 +77,26 @@ public final class ChatTweaksMod extends Module {
             return 0.0F;
         }
         return 9.0F * (1.0F - Easing.EXPO_OUT.apply(elapsed / SLIDE_MS));
+    }
+
+    /** Smoothly settles the chat input after each edit, without delaying keystrokes. */
+    public static float typingProgress(Object field, String text) {
+        ChatTweaksMod mod = active();
+        if (mod == null || !mod.smooth.isOn() || field == null) return 1.0F;
+        synchronized (mod.typingStates) {
+            TypingState state = mod.typingStates.get(field);
+            if (state == null) {
+                state = new TypingState();
+                mod.typingStates.put(field, state);
+            }
+            if (!String.valueOf(text).equals(state.text)) {
+                state.text = String.valueOf(text);
+                state.changedNanos = System.nanoTime();
+            }
+            float elapsed = (System.nanoTime() - state.changedNanos) / 1_000_000.0F;
+            float t = Math.max(0.0F, Math.min(1.0F, elapsed / TYPE_MS));
+            return Easing.CUBIC_OUT.apply(t);
+        }
     }
 
     public static boolean persianInput() {

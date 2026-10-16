@@ -21,7 +21,7 @@ public final class RoundedRenderer {
         draw(x, y, w, h, radius, color, color, false, 0.0F, 0, 0.0F);
     }
 
-    /** Flat-color compatibility path. Oryvex does not render UI gradients. */
+    /** Compatibility entry point. Only the first color is rendered. */
     public static void gradient(float x, float y, float w, float h, float radius, int from, int to, boolean vertical) {
         rect(x, y, w, h, radius, from);
     }
@@ -32,15 +32,12 @@ public final class RoundedRenderer {
 
     public static void gradientBordered(float x, float y, float w, float h, float radius, int from, int to,
                                         float border, int borderColor) {
-        draw(x, y, w, h, radius, from, to, false, border, borderColor, 0.0F);
+        bordered(x, y, w, h, radius, from, border, borderColor);
     }
 
-    /** Soft bloom around a rectangle; draw it before the rectangle itself. */
+    /** Retained for source compatibility. Glow rendering is intentionally disabled. */
     public static void glow(float x, float y, float w, float h, float radius, float size, int color) {
-        if (size <= 0.0F || ColorUtil.alpha(color) == 0) {
-            return;
-        }
-        draw(x, y, w, h, radius, color, color, false, 0.0F, 0, size);
+        // Flat UI: no bloom, blur halo, or light bleed.
     }
 
     public static void circle(float cx, float cy, float r, int color) {

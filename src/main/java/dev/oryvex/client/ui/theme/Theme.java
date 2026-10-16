@@ -1,7 +1,7 @@
 package dev.oryvex.client.ui.theme;
 
 /**
- * Oryvex visual identity: deep black surfaces with an electric-blue accent.
+ * Oryvex visual identity: deep black surfaces with an muted blue accent.
  * All colors are ARGB.
  */
 public final class Theme {
@@ -14,14 +14,14 @@ public final class Theme {
     public static final int SLATE_SOLID = 0xFF0E1117;
     /** Slightly lifted slate for hover states. */
     public static final int SLATE_RAISED = 0xE6151B26;
-    /** 1px neon-slate border #1C2433. */
+    /** 1px slate border #1C2433. */
     public static final int BORDER = 0xFF1C2433;
 
-    /** Electric neon blue gradient #007BFF -> #00B4FF. */
-    public static final int ACCENT_START = 0xFF007BFF;
-    public static final int ACCENT_END = 0xFF00B4FF;
-    /** Active / glow cyan-blue #00E5FF. */
-    public static final int GLOW = 0xFF00E5FF;
+    /** Flat muted blue accent. */
+    public static final int ACCENT_START = 0xFF4C78A8;
+    public static final int ACCENT_END = 0xFF6B8FB8;
+    /** Secondary muted blue accent. */
+    public static final int GLOW = 0xFF8AA4BF;
 
     public static final int TEXT_PRIMARY = 0xFFFFFFFF;
     public static final int TEXT_SECONDARY = 0xFF94A3B8;

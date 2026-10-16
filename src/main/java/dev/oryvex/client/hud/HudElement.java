@@ -26,7 +26,7 @@ public abstract class HudElement {
     private float relX;
     private float relY;
     private float scale = 1.0F;
-    private final Animation scaleAnimation = new Animation(Easing.EXPO_OUT, 220.0F, 1.0F);
+    private final Animation scaleAnimation = new Animation(Easing.CUBIC_OUT, 180.0F, 1.0F);
 
     protected HudElement(Module owner, String id, String displayName, float defaultX, float defaultY) {
         this.owner = owner;
@@ -58,8 +58,13 @@ public abstract class HudElement {
 
     public void draw(float screenWidth, float screenHeight, float partialTicks, boolean preview) {
         float s = this.getAnimatedScale();
-        float x = this.getX(screenWidth, preview);
-        float y = this.getY(screenHeight, preview);
+        float baseW = this.getWidth(preview);
+        float baseH = this.getHeight(preview);
+        float targetW = baseW * this.scale;
+        float targetH = baseH * this.scale;
+        // Keep the saved anchor fixed while the visual bounds tween around centre.
+        float x = this.relX * Math.max(0.0F, screenWidth - targetW) + (targetW - baseW * s) * 0.5F;
+        float y = this.relY * Math.max(0.0F, screenHeight - targetH) + (targetH - baseH * s) * 0.5F;
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, 0.0F);
         GlStateManager.scale(s, s, 1.0F);
