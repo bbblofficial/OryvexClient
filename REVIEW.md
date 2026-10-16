@@ -8,3 +8,4 @@
 - Static checks: Java brace balance passed. A Gradle compile could not be run in this sandbox because the project has no Gradle wrapper and dependencies are not available locally.
 - Chat input now has a short, frame-smooth settle animation for typed/edited text and caret movement, while keystrokes remain immediate.
 - Emoji/unicode supplementary characters now render as full code points instead of two independent UTF-16 surrogate glyphs; font selection, measurement, atlas rasterization, and cursor advance stay aligned.
+- CI log review: fixed the compile blocker caused by stale unreachable shader statements in `NebulaBackground`; the flat renderer now contains no references to the removed shader variable.
