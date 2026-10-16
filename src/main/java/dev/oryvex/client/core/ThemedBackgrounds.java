@@ -4,7 +4,6 @@ import dev.oryvex.client.modules.misc.InterfaceMod;
 import dev.oryvex.client.render.ColorUtil;
 import dev.oryvex.client.render.NebulaBackground;
 import dev.oryvex.client.render.RenderUtil;
-import dev.oryvex.client.render.blur.KawaseBlur;
 import dev.oryvex.client.ui.theme.Theme;
 
 /**
@@ -21,15 +20,9 @@ public final class ThemedBackgrounds {
         RenderUtil.rect(0.0F, 0.0F, width, height, ColorUtil.mulAlpha(Theme.OBSIDIAN, 0.35F));
     }
 
-    /** Replaces the translucent gradient drawn over the live world. */
+    /** Replaces the translucent overlay drawn over the live world. */
     public static void world(int width, int height) {
-        if (InterfaceMod.blurEnabled() && KawaseBlur.available()) {
-            int strength = InterfaceMod.blurStrength();
-            KawaseBlur.prepare(strength, 1.0F + strength * 0.45F);
-            KawaseBlur.drawBlurred(0.0F, 0.0F, width, height, 0.0F, ColorUtil.mulAlpha(Theme.OBSIDIAN, 0.40F), 1.0F);
-        } else {
-            RenderUtil.gradient(0.0F, 0.0F, width, height, ColorUtil.mulAlpha(Theme.OBSIDIAN, 0.55F), ColorUtil.mulAlpha(Theme.SLATE, 0.75F), true);
-        }
+        RenderUtil.rect(0.0F, 0.0F, width, height, ColorUtil.mulAlpha(Theme.OBSIDIAN, 0.65F));
     }
 
     /** Lists (server list, resource packs...): translucent slate instead of dirt. */

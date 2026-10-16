@@ -2,14 +2,8 @@ package dev.oryvex.client.render;
 
 import dev.oryvex.client.ui.theme.Theme;
 
-/**
- * Animated procedural nebula + perspective grid used behind every menu.
- */
+/** Solid menu background renderer retained behind the existing menu API. */
 public final class NebulaBackground {
-
-    private static final long START = System.currentTimeMillis();
-    private static float mouseX = 0.5F;
-    private static float mouseY = 0.5F;
 
     private NebulaBackground() {
     }

@@ -9,3 +9,11 @@
 - Chat input now has a short, frame-smooth settle animation for typed/edited text and caret movement, while keystrokes remain immediate.
 - Emoji/unicode supplementary characters now render as full code points instead of two independent UTF-16 surrogate glyphs; font selection, measurement, atlas rasterization, and cursor advance stay aligned.
 - CI log review: fixed the compile blocker caused by stale unreachable shader statements in `NebulaBackground`; the flat renderer now contains no references to the removed shader variable.
+
+## Final audit
+
+- Reviewed all 93 Java source files and project resources.
+- Removed the CI compile blocker in `NebulaBackground` and removed active blur/gradient background paths.
+- Verified balanced Java braces, no NUL bytes, no stale `shader` references in the flat background renderer, and preserved supplementary-Unicode emoji handling.
+- The remaining `gradient` and `glow` method names are compatibility APIs used by existing callers; their rendering behavior is flat solid-color or no-op, respectively.
+- The supplied CI run stopped at Java compilation before producing a game runtime log. The logged `FloatBuffer.flip()` Mixin message is a warning, not the failure that stopped the build.
