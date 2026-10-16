@@ -1,0 +1,20 @@
+{
+  "required": true,
+  "minVersion": "0.7.11",
+  "compatibilityLevel": "JAVA_8",
+  "package": "dev.oryvex.client.mixin",
+  "refmap": "mixins.oryvex.refmap.json",
+  "verbose": false,
+  "client": [
+    "MixinMinecraft",
+    "MixinFontRenderer",
+    "MixinGuiScreen",
+    "MixinGuiButton",
+    "MixinGuiOptionSlider",
+    "MixinGuiSlot",
+    "MixinGuiNewChat",
+    "MixinGuiTextField",
+    "MixinItemRenderer",
+    "MixinRendererLivingEntity"
+  ]
+}

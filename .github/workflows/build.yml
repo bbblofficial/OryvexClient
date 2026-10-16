@@ -1,0 +1,143 @@
+name: Build OryvexClient
+
+on:
+  push:
+    branches: [ "**" ]
+    tags: [ "v*" ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GRADLE_VERSION: "4.10.3"
+  FONT_DIR: src/main/resources/assets/oryvex/fonts
+  JAR_PATH: build/libs/OryvexClient-1.8.9.jar
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Xmx3G"
+
+jobs:
+  build:
+    name: Build (JDK 8 / Gradle 4.10.3 / ForgeGradle 2.1)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Temurin JDK 8
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "8"
+          cache: gradle
+
+      - name: Cache ForgeGradle workspace
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches/minecraft
+            ~/.gradle/wrapper/dists
+          key: forgegradle-${{ runner.os }}-${{ hashFiles('build.gradle') }}
+          restore-keys: forgegradle-${{ runner.os }}-
+
+      - name: Fetch fonts (Vazirmatn + Inter)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$FONT_DIR"
+
+          fetch() {   # fetch <dest> <url...>
+            local dest="$1"; shift
+            for url in "$@"; do
+              echo "-> $url"
+              if curl -fsSL --retry 4 --retry-delay 3 --connect-timeout 20 -o "$dest.part" "$url"; then
+                mv "$dest.part" "$dest"; return 0
+              fi
+            done
+            rm -f "$dest.part"; return 1
+          }
+
+          for weight in Regular Bold; do
+            fetch "$FONT_DIR/Vazirmatn-$weight.ttf" \
+              "https://raw.githubusercontent.com/rastikerdar/vazirmatn/master/fonts/ttf/Vazirmatn-$weight.ttf" \
+              "https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/ttf/Vazirmatn-$weight.ttf" \
+            || {
+              echo "Raw download failed, falling back to the official release archive"
+              curl -fsSL --retry 4 -o /tmp/vazirmatn.zip \
+                "https://github.com/rastikerdar/vazirmatn/releases/download/v33.003/vazirmatn-v33.003.zip"
+              unzip -o -j /tmp/vazirmatn.zip "fonts/ttf/Vazirmatn-$weight.ttf" -d "$FONT_DIR"
+            }
+          done
+
+          curl -fsSL --retry 4 --retry-delay 3 -o /tmp/inter.zip \
+            "https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip"
+          unzip -o -j /tmp/inter.zip "extras/ttf/Inter-Regular.ttf" "extras/ttf/Inter-Bold.ttf" -d "$FONT_DIR"
+
+      - name: Verify fonts are real TrueType files
+        shell: bash
+        run: |
+          set -euo pipefail
+          for f in Inter-Regular Inter-Bold Vazirmatn-Regular Vazirmatn-Bold; do
+            path="$FONT_DIR/$f.ttf"
+            test -s "$path" || { echo "::error::$path missing"; exit 1; }
+            size=$(stat -c%s "$path")
+            magic=$(head -c 4 "$path" | od -An -tx1 | tr -d ' \n')
+            echo "$f.ttf  size=$size  magic=$magic"
+            [ "$size" -gt 10000 ] || { echo "::error::$path is too small"; exit 1; }
+            case "$magic" in
+              00010000|74727565|4f54544f) ;;
+              *) echo "::error::$path is not a TrueType/OpenType font"; exit 1 ;;
+            esac
+          done
+
+      - name: Bootstrap Gradle ${{ env.GRADLE_VERSION }} wrapper (no committed binaries)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -x ./gradlew ] || [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
+            curl -fsSL --retry 4 -o /tmp/gradle.zip \
+              "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip"
+            unzip -q -o /tmp/gradle.zip -d /tmp/gradle-dist
+            # Generate the wrapper in an empty directory so ForgeGradle is not configured twice.
+            mkdir -p /tmp/wrapper-gen && cd /tmp/wrapper-gen
+            touch settings.gradle
+            "/tmp/gradle-dist/gradle-${GRADLE_VERSION}/bin/gradle" wrapper \
+              --gradle-version "${GRADLE_VERSION}" --distribution-type bin --no-daemon -q
+            cd "$GITHUB_WORKSPACE"
+            cp /tmp/wrapper-gen/gradlew ./gradlew
+            cp /tmp/wrapper-gen/gradlew.bat ./gradlew.bat
+            mkdir -p gradle/wrapper
+            cp /tmp/wrapper-gen/gradle/wrapper/* gradle/wrapper/
+          fi
+          chmod +x ./gradlew
+          ./gradlew --version
+
+      - name: Build (setupCiWorkspace build shadowJar)
+        shell: bash
+        run: ./gradlew setupCiWorkspace build shadowJar --stacktrace
+
+      - name: Verify artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          ls -la build/libs
+          test -s "$JAR_PATH" || { echo "::error::$JAR_PATH was not produced"; exit 1; }
+          unzip -l "$JAR_PATH" | grep -q "mixins.oryvex.json"
+          unzip -l "$JAR_PATH" | grep -q "mixins.oryvex.refmap.json"
+          unzip -l "$JAR_PATH" | grep -q "org/spongepowered/asm/launch/MixinTweaker.class"
+          unzip -l "$JAR_PATH" | grep -q "assets/oryvex/fonts/Vazirmatn-Regular.ttf"
+          unzip -p "$JAR_PATH" META-INF/MANIFEST.MF
+
+      - name: Upload OryvexClient-1.8.9.jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: OryvexClient-1.8.9
+          path: build/libs/OryvexClient-1.8.9.jar
+          if-no-files-found: error
+          retention-days: 30

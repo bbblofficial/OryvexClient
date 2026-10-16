@@ -1,0 +1,28 @@
+# Gradle / ForgeGradle
+.gradle/
+build/
+out/
+run/
+classes/
+gradle/
+gradlew
+gradlew.bat
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+bin/
+
+# Fonts are fetched in CI / by `gradle fetchFonts` (no binaries in git)
+src/main/resources/assets/oryvex/fonts/*.ttf
+src/main/resources/assets/oryvex/fonts/*.otf
+
+# OS
+.DS_Store
+Thumbs.db

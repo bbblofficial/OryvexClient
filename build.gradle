@@ -1,0 +1,183 @@
+// OryvexClient - Minecraft 1.8.9 PvP & Utility Client
+// Toolchain: Gradle 4.10.3 / JDK 8 / ForgeGradle 2.1 (asbyth fork) / Mixin 0.7.11 / Shadow 4.0.4
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { name = 'gradle-plugins'; url = 'https://plugins.gradle.org/m2/' }
+        maven { name = 'forge';          url = 'https://maven.minecraftforge.net/' }
+        maven { name = 'sponge';         url = 'https://repo.spongepowered.org/repository/maven-public/' }
+        maven { name = 'jitpack';        url = 'https://jitpack.io/' }
+    }
+    dependencies {
+        classpath 'com.github.asbyth:ForgeGradle:6f53277'
+        classpath 'com.github.xcfrg:MixinGradle:0.6-SNAPSHOT'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+version = '1.8.9'
+group = 'dev.oryvex'
+archivesBaseName = 'OryvexClient'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+compileJava.options.encoding = 'UTF-8'
+
+ext {
+    mixinConfig = 'mixins.oryvex.json'
+    mixinRefmap = 'mixins.oryvex.refmap.json'
+    mixinVersion = '0.7.11-SNAPSHOT'
+}
+
+// Keep resources next to classes so FML finds mcmod.info / assets in dev runs.
+sourceSets {
+    main {
+        output.resourcesDir = java.outputDir
+    }
+}
+
+minecraft {
+    version = '1.8.9-11.15.1.2318-1.8.9'
+    runDir = 'run'
+    mappings = 'stable_22'
+    makeObfSourceJar = false
+    clientRunArgs += ['--tweakClass', 'org.spongepowered.asm.launch.MixinTweaker', '--mixin', mixinConfig]
+}
+
+repositories {
+    mavenCentral()
+    maven { name = 'sponge';  url = 'https://repo.spongepowered.org/repository/maven-public/' }
+    maven { name = 'jitpack'; url = 'https://jitpack.io/' }
+}
+
+configurations {
+    embed
+    compile.extendsFrom(embed)
+}
+
+dependencies {
+    embed("org.spongepowered:mixin:${mixinVersion}") {
+        transitive = false
+    }
+    annotationProcessor "org.spongepowered:mixin:${mixinVersion}"
+}
+
+mixin {
+    add sourceSets.main, mixinRefmap
+    defaultObfuscationEnv searge
+}
+
+// ---------------------------------------------------------------------------
+// Fonts are NOT committed (zero binaries in git). CI downloads them first;
+// local builds fetch them through this task. The client falls back to the
+// JVM SansSerif font at runtime if a file is missing.
+// ---------------------------------------------------------------------------
+task fetchFonts {
+    description = 'Downloads Inter and Vazirmatn TTF files into src/main/resources/assets/oryvex/fonts'
+    group = 'oryvex'
+    def fontDir = file('src/main/resources/assets/oryvex/fonts')
+    outputs.upToDateWhen {
+        ['Inter-Regular.ttf', 'Inter-Bold.ttf', 'Vazirmatn-Regular.ttf', 'Vazirmatn-Bold.ttf'].every { new File(fontDir, it).length() > 10000 }
+    }
+    doLast {
+        fontDir.mkdirs()
+        def vazirSources = [
+            'https://raw.githubusercontent.com/rastikerdar/vazirmatn/master/fonts/ttf/',
+            'https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/ttf/'
+        ]
+        ['Vazirmatn-Regular.ttf', 'Vazirmatn-Bold.ttf'].each { name ->
+            def target = new File(fontDir, name)
+            if (target.length() > 10000) return
+            for (String base : vazirSources) {
+                try {
+                    ant.get(src: base + name, dest: target, verbose: false, ignoreerrors: false)
+                    if (target.length() > 10000) break
+                } catch (Exception e) {
+                    logger.warn("[oryvex] ${base}${name} failed: ${e.message}")
+                }
+            }
+        }
+        def interMissing = ['Inter-Regular.ttf', 'Inter-Bold.ttf'].any { new File(fontDir, it).length() <= 10000 }
+        if (interMissing) {
+            def zip = new File(buildDir, 'tmp/Inter-4.1.zip')
+            zip.parentFile.mkdirs()
+            try {
+                ant.get(src: 'https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip', dest: zip, verbose: false)
+                copy {
+                    from(zipTree(zip)) {
+                        include 'extras/ttf/Inter-Regular.ttf'
+                        include 'extras/ttf/Inter-Bold.ttf'
+                        eachFile { it.path = it.name }
+                        includeEmptyDirs = false
+                    }
+                    into fontDir
+                }
+            } catch (Exception e) {
+                logger.warn("[oryvex] Inter download failed: ${e.message}. Runtime will fall back to SansSerif.")
+            }
+        }
+    }
+}
+processResources.dependsOn fetchFonts
+
+processResources {
+    inputs.property 'version', project.version
+    inputs.property 'mcversion', project.minecraft.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        expand 'version': project.version, 'mcversion': project.minecraft.version
+    }
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
+
+def oryvexManifest = [
+    'TweakClass'                 : 'org.spongepowered.asm.launch.MixinTweaker',
+    'TweakOrder'                 : '0',
+    'MixinConfigs'               : mixinConfig,
+    'FMLCorePluginContainsFMLMod': 'true',
+    'ForceLoadAsMod'             : 'true',
+    'ModSide'                    : 'CLIENT',
+    'Implementation-Title'       : 'OryvexClient',
+    'Implementation-Version'     : project.version
+]
+
+jar {
+    classifier = 'slim'
+    manifest.attributes(oryvexManifest)
+}
+
+shadowJar {
+    classifier = ''
+    archiveName = "${archivesBaseName}-${version}.jar"
+    configurations = [project.configurations.embed]
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest.attributes(oryvexManifest)
+
+    exclude 'module-info.class'
+    exclude 'dummyThing'
+    exclude 'LICENSE.txt'
+    exclude 'META-INF/maven/**'
+    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
+}
+
+reobf {
+    shadowJar {
+        mappingType = 'SEARGE'
+    }
+}
+
+afterEvaluate {
+    tasks.reobfShadowJar.mustRunAfter tasks.shadowJar
+    tasks.shadowJar.finalizedBy tasks.reobfShadowJar
+}
+
+build.dependsOn shadowJar

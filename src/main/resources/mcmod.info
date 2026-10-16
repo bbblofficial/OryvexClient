@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "oryvex",
+    "name": "OryvexClient",
+    "description": "PvP & utility client for Minecraft 1.8.9: BiDi Persian/English font engine, glass UI, offline alt manager, HUD editor and PvP modules.",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "updateUrl": "",
+    "authorList": ["Oryvex Team"],
+    "credits": "Inter by Rasmus Andersson (OFL), Vazirmatn by Saber Rastikerdar (OFL), SpongePowered Mixin (MIT)",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
