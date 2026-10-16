@@ -15,8 +15,6 @@ import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.Collection;
 
@@ -37,16 +35,7 @@ public final class ScoreboardMod extends Module {
         return mod != null && mod.isEnabled() ? mod : null;
     }
 
-    public void onOverlay(RenderGameOverlayEvent.Pre event) {
-        if (event.type != RenderGameOverlayEvent.ElementType.SCOREBOARD || this.mc.theWorld == null) return;
-        Scoreboard board = this.mc.theWorld.getScoreboard();
-        ScoreObjective objective = board.getObjectiveInDisplaySlot(1);
-        if (objective == null) return;
-        event.setCanceled(true);
-        this.render(objective, event.resolution);
-    }
-
-    private void render(ScoreObjective objective, ScaledResolution sr) {
+    public void renderObjective(ScoreObjective objective, ScaledResolution sr) {
         Collection<Score> raw = objective.getScoreboard().getSortedScores(objective);
         int shown = 0;
         for (Score score : raw) if (score.getPlayerName() != null && !score.getPlayerName().startsWith("#")) shown++;
@@ -58,7 +47,7 @@ public final class ScoreboardMod extends Module {
         int index = 0;
         for (Score score : raw) {
             if (score.getPlayerName().startsWith("#") || index >= max) continue;
-            String name = ScorePlayerTeam.formatPlayerName(score.getScoreboard().getPlayersTeam(score.getPlayerName()), score.getPlayerName());
+            String name = ScorePlayerTeam.formatPlayerName(objective.getScoreboard().getPlayersTeam(score.getPlayerName()), score.getPlayerName());
             String value = this.numbers.isOn() ? " " + score.getScorePoints() : "";
             width = Math.max(width, Fonts.width(name + value, 8.5F, false));
             index++;
@@ -72,7 +61,7 @@ public final class ScoreboardMod extends Module {
         index = 0;
         for (Score score : raw) {
             if (score.getPlayerName().startsWith("#") || index >= max) continue;
-            String name = ScorePlayerTeam.formatPlayerName(score.getScoreboard().getPlayersTeam(score.getPlayerName()), score.getPlayerName());
+            String name = ScorePlayerTeam.formatPlayerName(objective.getScoreboard().getPlayersTeam(score.getPlayerName()), score.getPlayerName());
             String value = this.numbers.isOn() ? " " + score.getScorePoints() : "";
             Fonts.draw(name + value, x + 7.0F, y + 8.0F + (index + 1) * line, this.textColor.getColor() | 0xFF000000, 8.5F * s, false);
             index++;

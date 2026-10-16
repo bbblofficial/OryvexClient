@@ -7,7 +7,6 @@ import dev.oryvex.client.hud.HudRenderer;
 import dev.oryvex.client.module.Module;
 import dev.oryvex.client.module.ModuleManager;
 import dev.oryvex.client.modules.visuals.VisualsMod;
-import dev.oryvex.client.modules.visuals.ScoreboardMod;
 import dev.oryvex.client.ui.clickgui.OryvexClickGui;
 import dev.oryvex.client.ui.screen.HudEditorScreen;
 import dev.oryvex.client.util.CombatTracker;
@@ -102,10 +101,7 @@ public final class ClientEvents {
         if (visuals == null) {
             return;
         }
-        if (event.type == RenderGameOverlayEvent.ElementType.SCOREBOARD) {
-            ScoreboardMod scoreboard = ModuleManager.module(ScoreboardMod.class);
-            if (scoreboard != null && scoreboard.isEnabled()) scoreboard.onOverlay(event);
-        } else if (event.type == RenderGameOverlayEvent.ElementType.ALL) {
+        if (event.type == RenderGameOverlayEvent.ElementType.ALL) {
             visuals.onPreHud(event.resolution);
         } else if (event.type == RenderGameOverlayEvent.ElementType.CROSSHAIRS && visuals.customCrosshair()) {
             event.setCanceled(true);
