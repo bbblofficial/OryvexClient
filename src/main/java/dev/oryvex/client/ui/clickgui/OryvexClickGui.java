@@ -50,7 +50,7 @@ public final class OryvexClickGui extends OryvexScreen {
     private static int selectedTab;
 
     private final GuiScreen parent;
-    private final TextBox search = new TextBox("Search mods...  \u062c\u0633\u062a\u062c\u0648", 32);
+    private final TextBox search = new TextBox("Search mods...", 32);
     private final Map<Module, ModCard> cards = new IdentityHashMap<>();
     private final SmoothValue gridScroll = new SmoothValue(16.0F);
     private final SmoothValue drawerScroll = new SmoothValue(16.0F);
@@ -287,14 +287,12 @@ public final class OryvexClickGui extends OryvexScreen {
         this.gridScroll.clamp(0.0F, Math.max(0.0F, content - this.gridH()));
         float offset = this.gridScroll.get();
         boolean drawerOpen = this.drawerAnim.get() > 0.5F;
-        float drawerLeft = this.px + this.pw - DRAWER_W * this.drawerAnim.get();
+        float drawerLeft = this.px + this.pw - DRAWER_W;
 
         Scissor.push(this.gridX() - 6.0F, this.gridY() - 2.0F, this.gridW() + 12.0F, this.gridH() + 4.0F);
         if (list.isEmpty()) {
             Fonts.drawCenter("No mods match your search", this.gridX() + this.gridW() / 2.0F, this.gridY() + 40.0F,
                 ColorUtil.mulAlpha(Theme.TEXT_SECONDARY, a), 9.0F, false);
-            Fonts.drawCenter("\u0645\u0648\u0631\u062f\u06cc \u067e\u06cc\u062f\u0627 \u0646\u0634\u062f", this.gridX() + this.gridW() / 2.0F, this.gridY() + 54.0F,
-                ColorUtil.mulAlpha(Theme.TEXT_MUTED, a), 8.5F, false);
         }
         for (int i = 0; i < list.size(); i++) {
             int col = i % cols;
@@ -319,7 +317,7 @@ public final class OryvexClickGui extends OryvexScreen {
     }
 
     private float drawerX() {
-        return this.px + this.pw - DRAWER_W * this.drawerAnim.get();
+        return this.px + this.pw - DRAWER_W;
     }
 
     private void renderDrawer(int mouseX, int mouseY, float a) {
@@ -336,14 +334,14 @@ public final class OryvexClickGui extends OryvexScreen {
         float h = this.ph - 2.0F;
         Scissor.push(this.px, this.py, this.pw, this.ph);
         RoundedRenderer.glow(x, y, DRAWER_W, h, Theme.RADIUS_PANEL, 14.0F, ColorUtil.mulAlpha(0xFF000000, 0.5F * d * a));
-        RoundedRenderer.bordered(x, y, DRAWER_W, h, Theme.RADIUS_PANEL, ColorUtil.mulAlpha(0xF70B0E14, a), 1.0F, ColorUtil.mulAlpha(Theme.BORDER, a));
+        RoundedRenderer.bordered(x, y, DRAWER_W, h, Theme.RADIUS_PANEL, ColorUtil.mulAlpha(0xF70B0E14, a * d), 1.0F, ColorUtil.mulAlpha(Theme.BORDER, a * d));
         float inner = x + 12.0F;
         float innerW = DRAWER_W - 24.0F;
-        Fonts.draw(Fonts.trim(this.drawerModule.getName(), innerW - 20.0F, 11.0F, true), inner, y + 11.0F, ColorUtil.mulAlpha(Theme.TEXT_PRIMARY, a), 11.0F, true);
-        Fonts.draw(this.drawerModule.getPersianName(), inner, y + 25.0F, ColorUtil.mulAlpha(Theme.TEXT_SECONDARY, a), 8.0F, false);
+        Fonts.draw(Fonts.trim(this.drawerModule.getName(), innerW - 20.0F, 11.0F, true), inner, y + 11.0F, ColorUtil.mulAlpha(Theme.TEXT_PRIMARY, a * d), 11.0F, true);
+        Fonts.draw(this.drawerModule.getDescription(), inner, y + 25.0F, ColorUtil.mulAlpha(Theme.TEXT_SECONDARY, a * d), 8.0F, false);
         boolean closeHover = RenderUtil.hovered(mouseX, mouseY, x + DRAWER_W - 24.0F, y + 8.0F, 16.0F, 16.0F);
-        Fonts.drawCenter("\u00d7", x + DRAWER_W - 16.0F, y + 16.0F, ColorUtil.mulAlpha(closeHover ? Theme.DANGER : Theme.TEXT_SECONDARY, a), 12.0F, true);
-        RoundedRenderer.gradient(inner, y + 38.0F, innerW, 1.0F, 0.5F, ColorUtil.mulAlpha(Theme.ACCENT_START, a), ColorUtil.mulAlpha(0x0000B4FF, a), false);
+        Fonts.drawCenter("\u00d7", x + DRAWER_W - 16.0F, y + 16.0F, ColorUtil.mulAlpha(closeHover ? Theme.DANGER : Theme.TEXT_SECONDARY, a * d), 12.0F, true);
+        RoundedRenderer.gradient(inner, y + 38.0F, innerW, 1.0F, 0.5F, ColorUtil.mulAlpha(Theme.ACCENT_START, a * d), ColorUtil.mulAlpha(0x0000B4FF, a), false);
 
         float top = y + 44.0F;
         float height = h - 50.0F;
@@ -364,7 +362,7 @@ public final class OryvexClickGui extends OryvexScreen {
                 component.mouseDragged(inner, cy, innerW, mouseX, mouseY);
             }
             if (cy + component.getHeight() > top - 2.0F && cy < top + height + 2.0F) {
-                component.render(inner, cy, innerW, mouseX, mouseY, a);
+                component.render(inner, cy, innerW, mouseX, mouseY, a * d);
             }
             cy += component.getHeight() + 4.0F;
         }

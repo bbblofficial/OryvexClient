@@ -173,8 +173,6 @@ public final class OryvexAltManager extends OryvexScreen {
 
         if (accounts.isEmpty()) {
             Fonts.drawCenter("No saved accounts yet", x + w / 2.0F, top + height / 2.0F - 6.0F, ColorUtil.mulAlpha(Theme.TEXT_SECONDARY, a), 9.0F, false);
-            Fonts.drawCenter("\u0647\u0646\u0648\u0632 \u062d\u0633\u0627\u0628\u06cc \u0630\u062e\u06cc\u0631\u0647 \u0646\u0634\u062f\u0647", x + w / 2.0F, top + height / 2.0F + 7.0F,
-                ColorUtil.mulAlpha(Theme.TEXT_MUTED, a), 8.5F, false);
             return;
         }
         String active = this.mc.getSession().getUsername();

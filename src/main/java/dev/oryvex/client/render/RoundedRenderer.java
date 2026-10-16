@@ -21,8 +21,9 @@ public final class RoundedRenderer {
         draw(x, y, w, h, radius, color, color, false, 0.0F, 0, 0.0F);
     }
 
+    /** Flat-color compatibility path. Oryvex does not render UI gradients. */
     public static void gradient(float x, float y, float w, float h, float radius, int from, int to, boolean vertical) {
-        draw(x, y, w, h, radius, from, to, vertical, 0.0F, 0, 0.0F);
+        rect(x, y, w, h, radius, from);
     }
 
     public static void bordered(float x, float y, float w, float h, float radius, int fill, float border, int borderColor) {

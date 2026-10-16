@@ -77,8 +77,6 @@ public final class OryvexIngameMenu extends OryvexScreen {
         RoundedRenderer.gradient(this.cardX + 14.0F, this.cardY + 30.0F, CARD_W - 28.0F, 1.0F, 0.5F,
             ColorUtil.mulAlpha(Theme.ACCENT_START, t), ColorUtil.mulAlpha(0x0000B4FF, t), false);
         Fonts.draw("Game Paused", this.cardX + 14.0F, this.cardY + 11.0F, ColorUtil.mulAlpha(Theme.TEXT_PRIMARY, t), 12.0F, true);
-        Fonts.drawRightMiddle("\u0645\u0646\u0648\u06cc \u062a\u0648\u0642\u0641", this.cardX + CARD_W - 14.0F, this.cardY + 17.0F,
-            ColorUtil.mulAlpha(Theme.TEXT_SECONDARY, t), 9.0F, false);
         this.renderButtons(mouseX, mouseY, t);
         GlStateManager.popMatrix();
         super.drawScreen(mouseX, mouseY, partialTicks);

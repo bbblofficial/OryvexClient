@@ -15,6 +15,7 @@
     "MixinGuiNewChat",
     "MixinGuiTextField",
     "MixinItemRenderer",
-    "MixinRendererLivingEntity"
+    "MixinRendererLivingEntity",
+    "MixinGuiPlayerTabOverlay"
   ]
 }

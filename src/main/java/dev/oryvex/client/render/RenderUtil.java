@@ -47,31 +47,9 @@ public final class RenderUtil {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
+    /** Solid replacement for the legacy gradient API. The UI intentionally uses flat colors. */
     public static void gradient(float x, float y, float w, float h, int from, int to, boolean vertical) {
-        if (w <= 0.0F || h <= 0.0F) {
-            return;
-        }
-        Tessellator tessellator = Tessellator.getInstance();
-        WorldRenderer wr = tessellator.getWorldRenderer();
-        GlStateManager.enableBlend();
-        GlStateManager.disableTexture2D();
-        GlStateManager.disableAlpha();
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-        GlStateManager.shadeModel(GL11.GL_SMOOTH);
-        wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-        int bl = vertical ? to : from;
-        int br = to;
-        int tr = vertical ? from : to;
-        int tl = from;
-        vertex(wr, x, y + h, bl);
-        vertex(wr, x + w, y + h, br);
-        vertex(wr, x + w, y, tr);
-        vertex(wr, x, y, tl);
-        tessellator.draw();
-        GlStateManager.shadeModel(GL11.GL_FLAT);
-        GlStateManager.enableAlpha();
-        GlStateManager.enableTexture2D();
-        GlStateManager.disableBlend();
+        rect(x, y, w, h, from);
     }
 
     private static void vertex(WorldRenderer wr, float x, float y, int c) {

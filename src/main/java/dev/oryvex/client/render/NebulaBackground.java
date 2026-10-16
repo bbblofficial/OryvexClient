@@ -5,7 +5,6 @@ import dev.oryvex.client.render.shader.Shaders;
 import dev.oryvex.client.ui.theme.Theme;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import org.lwjgl.input.Mouse;
 
 /**
  * Animated procedural nebula + perspective grid used behind every menu.
@@ -21,16 +20,15 @@ public final class NebulaBackground {
 
     public static void render(float width, float height) {
         Minecraft mc = Minecraft.getMinecraft();
+        // Paint before any shader work so the first frame can never expose the default white buffer.
+        RenderUtil.rect(0.0F, 0.0F, width, height, Theme.OBSIDIAN_SOLID);
         ShaderProgram shader = Shaders.nebula();
         if (shader == null) {
-            RenderUtil.gradient(0.0F, 0.0F, width, height, Theme.OBSIDIAN_SOLID, Theme.SLATE_SOLID, true);
-            RenderUtil.gradient(0.0F, height * 0.55F, width, height * 0.45F, 0x00007BFF, 0x30007BFF, true);
             return;
         }
-        float targetX = mc.displayWidth > 0 ? Mouse.getX() / (float) mc.displayWidth : 0.5F;
-        float targetY = mc.displayHeight > 0 ? Mouse.getY() / (float) mc.displayHeight : 0.5F;
-        mouseX += (targetX - mouseX) * 0.04F;
-        mouseY += (targetY - mouseY) * 0.04F;
+        // Keep the background fixed: menu motion is limited to fade and scale transitions.
+        mouseX = 0.5F;
+        mouseY = 0.5F;
 
         GlStateManager.disableBlend();
         GlStateManager.disableAlpha();

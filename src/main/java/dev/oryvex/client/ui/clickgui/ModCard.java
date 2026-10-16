@@ -60,7 +60,7 @@ public final class ModCard {
         float textX = x + 36.0F;
         float textW = w - 46.0F;
         Fonts.draw(Fonts.trim(this.module.getName(), textW, 9.5F, true), textX, y + 9.0F, ColorUtil.mulAlpha(Theme.TEXT_PRIMARY, alpha), 9.5F, true);
-        Fonts.draw(Fonts.trim(this.module.getPersianName(), textW, 8.0F, false), textX, y + 20.5F,
+        Fonts.draw(Fonts.trim(this.module.getDescription(), textW, 8.0F, false), textX, y + 20.5F,
             ColorUtil.mulAlpha(Theme.TEXT_SECONDARY, alpha), 8.0F, false);
         java.util.List<String> lines = Fonts.wrap(this.module.getDescription(), w - 20.0F, 7.5F);
         for (int i = 0; i < Math.min(2, lines.size()); i++) {

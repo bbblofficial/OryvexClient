@@ -55,15 +55,9 @@ public final class Fonts {
     }
 
     /** Per-character horizontal gradient (LTR text). */
+    /** Compatibility API rendered as one flat color. */
     public static float drawGradient(String text, float x, float y, float size, boolean bold, int from, int to) {
-        float total = width(text, size, bold);
-        float cursor = x;
-        for (int i = 0; i < text.length(); i++) {
-            String ch = String.valueOf(text.charAt(i));
-            float t = total <= 0.0F ? 0.0F : (cursor - x) / total;
-            cursor += draw(ch, cursor, y, ColorUtil.lerp(from, to, t), size, bold);
-        }
-        return cursor - x;
+        return draw(text, x, y, from, size, bold);
     }
 
     /** Trims text with an ellipsis so it fits {@code maxWidth}. */

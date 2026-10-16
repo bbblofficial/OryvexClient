@@ -10,6 +10,9 @@ import dev.oryvex.client.modules.misc.InterfaceMod;
 import dev.oryvex.client.modules.pvp.OldAnimationsMod;
 import dev.oryvex.client.modules.pvp.ToggleSprintMod;
 import dev.oryvex.client.modules.visuals.VisualsMod;
+import dev.oryvex.client.modules.visuals.ScoreboardMod;
+import dev.oryvex.client.modules.visuals.TabMod;
+import dev.oryvex.client.modules.visuals.NametagMod;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +38,9 @@ public final class ModuleManager {
         this.register(new PerformanceHudMod());
         this.register(new OldAnimationsMod());
         this.register(new VisualsMod());
+        this.register(new ScoreboardMod());
+        this.register(new TabMod());
+        this.register(new NametagMod());
         this.register(new ChatTweaksMod());
         this.register(new InterfaceMod());
     }

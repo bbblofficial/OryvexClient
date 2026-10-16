@@ -76,7 +76,6 @@ public final class OryvexMainMenu extends OryvexScreen {
         NebulaBackground.render(this.width, this.height);
 
         GlStateManager.pushMatrix();
-        GlStateManager.translate(0.0F, (1.0F - t) * 14.0F, 0.0F);
 
         float titleSize = 34.0F;
         float titleWidth = Fonts.width("ORYVEX", titleSize, true);
@@ -86,8 +85,6 @@ public final class OryvexMainMenu extends OryvexScreen {
         Fonts.drawGradient("ORYVEX", tx, this.titleY, titleSize, true, ColorUtil.mulAlpha(Theme.ACCENT_START, a), ColorUtil.mulAlpha(Theme.GLOW, a));
         Fonts.drawCenterX("PVP & UTILITY CLIENT  \u00b7  1.8.9", this.width / 2.0F, this.titleY + 36.0F,
             ColorUtil.mulAlpha(Theme.TEXT_SECONDARY, a), 8.0F, true);
-        Fonts.drawCenterX("\u062e\u0648\u0634 \u0622\u0645\u062f\u06cc\u062f \u0628\u0647 OryvexClient", this.width / 2.0F, this.titleY + 47.0F,
-            ColorUtil.mulAlpha(Theme.TEXT_MUTED, a), 8.5F, false);
 
         this.glass(this.panelX, this.panelY, PANEL_W, this.panelH, Theme.RADIUS_PANEL, a);
         this.renderButtons(mouseX, mouseY, a);
