@@ -1,5 +1,5 @@
 // OryvexClient - Minecraft 1.8.9 PvP & Utility Client
-// Toolchain: Gradle 4.10.3 / JDK 8 / ForgeGradle 2.1 (asbyth fork) / Mixin 0.7.11 / Shadow 4.0.4
+// Toolchain: Gradle 4.10.3 / JDK 8 / ForgeGradle 2.1 / Mixin 0.7.11 / Shadow 4.0.4
 
 buildscript {
     repositories {
@@ -10,7 +10,9 @@ buildscript {
         maven { name = 'jitpack';        url = 'https://jitpack.io/' }
     }
     dependencies {
-        classpath 'com.github.asbyth:ForgeGradle:6f53277'
+        // Upstream ForgeGradle 2.1 (Forge Maven) — replaces the dead
+        // 'com.github.asbyth:ForgeGradle:6f53277' which JitPack now answers with 401.
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
         classpath 'com.github.xcfrg:MixinGradle:0.6-SNAPSHOT'
         classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
     }

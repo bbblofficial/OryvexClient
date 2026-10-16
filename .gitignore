@@ -18,7 +18,8 @@ gradlew.bat
 .project
 .classpath
 bin/
-
+ee.py
+folder_structure.txt
 # Fonts are fetched in CI / by `gradle fetchFonts` (no binaries in git)
 src/main/resources/assets/oryvex/fonts/*.ttf
 src/main/resources/assets/oryvex/fonts/*.otf
