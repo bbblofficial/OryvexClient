@@ -37,13 +37,6 @@ ext {
     mixinVersion = '0.7.11-SNAPSHOT'
 }
 
-// Keep resources next to classes so FML finds mcmod.info / assets in dev runs.
-sourceSets {
-    main {
-        output.resourcesDir = java.outputDir
-    }
-}
-
 minecraft {
     version = '1.8.9-11.15.1.2318-1.8.9'
     runDir = 'run'
